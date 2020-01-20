@@ -27,6 +27,7 @@ public:
 
 	void vGenerateInstance(int iInstanceSeed, int& errCode);
 	Array<double>* generateSolution(int& errCode);
+	Array<double>* repairSolution(double* pdSolution,int & errCode);
 
 	Array<double>* getSolution(int& errCode);
 	void setSolutionArray(Array<double>* newSolution,int& errCode);

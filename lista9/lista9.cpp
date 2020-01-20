@@ -13,6 +13,7 @@
 
 
 //-----------------MAIN DO ZAD 3---------------
+
 int main() {
 	CTimer timer;
 	timer.start();
@@ -65,7 +66,7 @@ int main() {
 
 	std::cout << "\n\n-------------------------------------------------------------\n\n";
 
-	CDiffEvol diffEvol(problem, 100);
+	CDiffEvol diffEvol(problem, 200,5);
 	double* solutionDiffEvol = diffEvol.search();
 	std::cout << "\nSOLUTION: \n";
 	for (int i = 0; i < problem->getSolutionSize(); i++) {
@@ -85,13 +86,14 @@ int main() {
 
 
 //-------------------MAIN DO WERYFIKACJI ROZWIAZAN-------------------------
-/*
 
+/*
 int main() {
 	int errCode = IS_OK;
 	CMscnProblem* problem;
 	problem = new CMscnProblem(1, 1, 1, 1);
 	problem->readProblemFile("plikProblemu2.txt", errCode);
+	std::cout << "\n\n";
 	problem->readSolutionFile("plikRozwiazania2.txt", errCode);
 
 	std::cout << "\n\nQuality:  ";
@@ -101,7 +103,6 @@ int main() {
 	std::cout << problem->bConstraintsSatisfied(problem->getSolution(errCode)->getTable(), errCode);
 
 	std::cout << "\n\n\n";
-	problem->getSolution(errCode)->printArray();
 }
 */
 

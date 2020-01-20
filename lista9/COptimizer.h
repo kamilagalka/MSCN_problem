@@ -4,7 +4,7 @@
 class COptimizer
 {
 public:
-	virtual double* search() { return 0; };
+	virtual double* search() = 0;
 private:
 	CProblem* problem;
 };

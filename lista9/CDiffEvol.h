@@ -7,9 +7,9 @@
 #include "COptimizer.h"
 #include "CTimer.h"
 
-class CDiffEvol:COptimizer {
+class CDiffEvol :public COptimizer {
 public:
-	CDiffEvol(CMscnProblem* _problem,int populationSize,double time);
+	CDiffEvol(CProblem* _problem, int populationSize, double time);
 	~CDiffEvol();
 	void initPopulation();
 	bool checkStopCondition(int counter);

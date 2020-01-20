@@ -5,7 +5,7 @@
 
 
 
-CDiffEvol::CDiffEvol(CMscnProblem * _problem, int _populationSize,double _time)
+CDiffEvol::CDiffEvol(CProblem * _problem, int _populationSize,double _time)
 {
 	problem = _problem;
 	populationSize = _populationSize;

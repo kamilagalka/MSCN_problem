@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CRandomSearch.h"
+#include <iostream>
 
 CRandomSearch::CRandomSearch()
 {
@@ -7,7 +8,7 @@ CRandomSearch::CRandomSearch()
 	numOfTries = 100;
 }
 
-CRandomSearch::CRandomSearch(CMscnProblem * cProblem,int _numOfTries)
+CRandomSearch::CRandomSearch(CProblem * cProblem,int _numOfTries)
 {
 	problem = cProblem;
 	numOfTries = _numOfTries;
@@ -37,6 +38,7 @@ Array<double>* CRandomSearch::search(int hereNumOfTries, int& errCode)
 			if (problem->bConstraintsSatisfied(currentSolution->getTable(), errCode)) {
 				bestQuality = currentQuality;
 				bestSolution = currentSolution;
+				bestConstraintsSatisfied = problem->bConstraintsSatisfied(currentSolution->getTable(), errCode);
 			}
 		}
 	}

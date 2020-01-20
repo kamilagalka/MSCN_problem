@@ -5,6 +5,7 @@
 #include "Matrix.h"
 #include "Array.h"
 #include "CRandom.h"
+#include <iostream>
 
 CMscnProblem::CMscnProblem(int iD, int iF, int iM, int iS)
 {
@@ -43,7 +44,7 @@ CMscnProblem::CMscnProblem(int iD, int iF, int iM, int iS)
 
 CMscnProblem::~CMscnProblem()
 {
-	
+
 	delete cd;
 	delete cf;
 	delete cm;
@@ -67,9 +68,9 @@ CMscnProblem::~CMscnProblem()
 	delete xdminmax;
 	delete xfminmax;
 	delete xmminmax;
-	
+
 	delete solution;
-	
+
 }
 
 
@@ -87,7 +88,7 @@ void CMscnProblem::vSetD(int newD, int& errCode)
 		xdminmax->changeSizeX(newD, errCode);
 
 		D = newD;
-		solution->changeSize(D*F + F * M + M * S,errCode);
+		solution->changeSize(D*F + F * M + M * S, errCode);
 
 	}
 }
@@ -166,11 +167,14 @@ double CMscnProblem::dGetQuality(double * pdSolution, int &errCode)
 	for (int i = 0; i < correctSize; i++) {
 		if (pdSolution[i] < 0) {
 			errCode = NEGATIVE_VALUES;
-			//std::cout << "WYWALAM BO NEGATIVE";
 		}
 	}
 	errCode = 0;
 	if (errCode == 0) {
+
+		if (!bConstraintsSatisfied(pdSolution, errCode)) {
+			pdSolution = repairSolution(pdSolution, errCode)->getTable();
+		}
 
 		// ----- P -----
 		double p = 0;
@@ -520,7 +524,6 @@ double CMscnProblem::getMaxAt(double * pdSolution, int index, int&errCode)
 
 void CMscnProblem::readProblemFile(std::string sFilename, int& errCode)
 {
-	std::cout << "\nsize: " << sd->getSize() << "\n";
 	FILE *pf_file;
 	pf_file = fopen(sFilename.c_str(), "r");
 	char name[256];
@@ -918,90 +921,90 @@ void CMscnProblem::saveProblemFile(std::string sFilename, int& errCode)
 
 void CMscnProblem::readSolutionFile(std::string sFilename, int & errCode)
 {
-		FILE *pf_file;
-		pf_file = fopen(sFilename.c_str(), "r");
-		char name[256];
-		int iNum;
-		double dNum = 0;
-		int blad;
-		int index = 0;
-		if (pf_file) {
-			//D
-			fscanf(pf_file, "%s", name);
-			fscanf(pf_file, "%i", &iNum);
-			vSetD(iNum, blad);
-			std::cout << "D: " << D << "\n";
+	FILE *pf_file;
+	pf_file = fopen(sFilename.c_str(), "r");
+	char name[256];
+	int iNum;
+	double dNum = 0;
+	int blad;
+	int index = 0;
+	if (pf_file) {
+		//D
+		fscanf(pf_file, "%s", name);
+		fscanf(pf_file, "%i", &iNum);
+		vSetD(iNum, blad);
+		std::cout << "D: " << D << "\n";
 
 
-			//F
-			fscanf(pf_file, "%s", name);
-			fscanf(pf_file, "%i", &iNum);
-			vSetF(iNum, blad);
-			std::cout << "F: " << F << "\n";
+		//F
+		fscanf(pf_file, "%s", name);
+		fscanf(pf_file, "%i", &iNum);
+		vSetF(iNum, blad);
+		std::cout << "F: " << F << "\n";
 
 
-			//M
-			fscanf(pf_file, "%s", name);
-			fscanf(pf_file, "%i", &iNum);
-			vSetM(iNum, blad);
-			std::cout << "M: " << M << "\n";
+		//M
+		fscanf(pf_file, "%s", name);
+		fscanf(pf_file, "%i", &iNum);
+		vSetM(iNum, blad);
+		std::cout << "M: " << M << "\n";
 
-			//S
-			fscanf(pf_file, "%s", name);
+		//S
+		fscanf(pf_file, "%s", name);
 
-			fscanf(pf_file, "%i", &iNum);
-			vSetS(iNum, blad);
-			std::cout << "S: " << S << "\n";
+		fscanf(pf_file, "%i", &iNum);
+		vSetS(iNum, blad);
+		std::cout << "S: " << S << "\n";
 
-			//xd
-			fscanf(pf_file, "%s", name);
-			for (int i = 0; i < D; i++) {
-				for (int j = 0; j < F; j++) {
-					fscanf(pf_file, "%lf", &dNum);
-					xd->setAt(i, j, dNum, errCode);
-					solution->setAt(index, dNum, errCode);
-					index++;
-				}
+		//xd
+		fscanf(pf_file, "%s", name);
+		for (int i = 0; i < D; i++) {
+			for (int j = 0; j < F; j++) {
+				fscanf(pf_file, "%lf", &dNum);
+				xd->setAt(i, j, dNum, errCode);
+				solution->setAt(index, dNum, errCode);
+				index++;
 			}
-			for (int i = 0; i < D; i++) {
-				for (int j = 0; j < F; j++) {
-					std::cout << "xd[" << i << "][" << j << "]: " << xd->getValueAt(i, j, errCode) << "\n";
-				}
-			}
-
-			//xf
-			fscanf(pf_file, "%s", name);
-			for (int i = 0; i < F; i++) {
-				for (int j = 0; j < M; j++) {
-					fscanf(pf_file, "%lf", &dNum);
-					xf->setAt(i, j, dNum, errCode);
-					solution->setAt(index, dNum, errCode);
-					index++;
-				}
-			}
-			for (int i = 0; i < F; i++) {
-				for (int j = 0; j < M; j++) {
-					std::cout << "xf[" << i << "][" << j << "]: " << xf->getValueAt(i, j, errCode) << "\n";
-				}
-			}
-
-			//xm
-			fscanf(pf_file, "%s", name);
-			for (int i = 0; i < M; i++) {
-				for (int j = 0; j < S; j++) {
-					fscanf(pf_file, "%lf", &dNum);
-					xm->setAt(i, j, dNum, errCode);
-					solution->setAt(index, dNum, errCode);
-					index++;
-				}
-			}
-			for (int i = 0; i < M; i++) {
-				for (int j = 0; j < S; j++) {
-					std::cout << "xm[" << i << "][" << j << "]: " << xm->getValueAt(i, j, errCode) << "\n";
-				}
-			}
-			fclose(pf_file);
 		}
+		for (int i = 0; i < D; i++) {
+			for (int j = 0; j < F; j++) {
+				std::cout << "xd[" << i << "][" << j << "]: " << xd->getValueAt(i, j, errCode) << "\n";
+			}
+		}
+
+		//xf
+		fscanf(pf_file, "%s", name);
+		for (int i = 0; i < F; i++) {
+			for (int j = 0; j < M; j++) {
+				fscanf(pf_file, "%lf", &dNum);
+				xf->setAt(i, j, dNum, errCode);
+				solution->setAt(index, dNum, errCode);
+				index++;
+			}
+		}
+		for (int i = 0; i < F; i++) {
+			for (int j = 0; j < M; j++) {
+				std::cout << "xf[" << i << "][" << j << "]: " << xf->getValueAt(i, j, errCode) << "\n";
+			}
+		}
+
+		//xm
+		fscanf(pf_file, "%s", name);
+		for (int i = 0; i < M; i++) {
+			for (int j = 0; j < S; j++) {
+				fscanf(pf_file, "%lf", &dNum);
+				xm->setAt(i, j, dNum, errCode);
+				solution->setAt(index, dNum, errCode);
+				index++;
+			}
+		}
+		for (int i = 0; i < M; i++) {
+			for (int j = 0; j < S; j++) {
+				std::cout << "xm[" << i << "][" << j << "]: " << xm->getValueAt(i, j, errCode) << "\n";
+			}
+		}
+		fclose(pf_file);
+	}
 }
 
 int CMscnProblem::getSolutionSize()
@@ -1184,7 +1187,7 @@ Array<double>* CMscnProblem::generateSolution(int & errCode)
 				xfSumF += xf->getValueAt(k, i, errCode);
 
 			}
-			xfSumF = xfSumF /( S*0.6);
+			xfSumF = xfSumF / (S*0.6);
 			int min = 0;
 			int max = sm->getValueAt(i, errCode) / (S*0.6);
 
@@ -1206,13 +1209,102 @@ Array<double>* CMscnProblem::generateSolution(int & errCode)
 	return solution;
 }
 
+Array<double>* CMscnProblem::repairSolution(double* pdSolution, int & errCode)
+{
+	CRandom crandom;
+
+	int solutionSize = D * F + F * M + M * S;
+	Array<double> *solution;
+	solution = new Array<double>(solutionSize);
+
+	for (int i = 0; i < solutionSize; i++) {
+		solution->setAt(i, pdSolution[i], errCode);
+	}
+
+	double sumD = 0;
+	double sumF = 0;
+	int position = 0;
+	for (int i = 0; i < D; i++) {
+		for (int j = 0; j < F; j++) {
+			int min = 0;
+			int max = sd->getValueAt(i, errCode) / (F*0.6);
+			double val = crandom.getRandomDouble(min, max);
+			if (!bConstraintsSatisfied(solution->getTable(), errCode)) {
+				solution->setAt(position, val, errCode);
+				xd->setAt(i, j, val, errCode);
+			}
+
+			position++;
+		}
+	}
+
+
+	for (int i = 0; i < F; i++) {
+		for (int j = 0; j < M; j++) {
+			double xdSumD = 0;
+
+			for (int k = 0; k < D; k++) {
+				xdSumD += xd->getValueAt(k, i, errCode);
+			}
+			xdSumD = xdSumD / (M*0.6);
+
+			int min = 0;
+			int max = sf->getValueAt(i, errCode) / (M*0.6);
+			if (xdSumD < max) {
+				max = xdSumD;
+			}
+			double val = crandom.getRandomDouble(min, max);
+			if (!bConstraintsSatisfied(solution->getTable(), errCode)) {
+				solution->setAt(position, val, errCode);
+				xf->setAt(i, j, val, errCode);
+			}
+			position++;
+			xdSumD = 0;
+		}
+	}
+
+	for (int i = 0; i < M; i++) {
+		for (int j = 0; j < S; j++) {
+
+			double xfSumF = 0;
+
+			for (int k = 0; k < F; k++) {
+				xfSumF += xf->getValueAt(k, i, errCode);
+
+			}
+			xfSumF = xfSumF / (S*0.6);
+			int min = 0;
+			int max = sm->getValueAt(i, errCode) / (S*0.6);
+
+			if (ss->getValueAt(j, errCode) / M < max) {
+				max = ss->getValueAt(j, errCode) / (M*0.6);
+
+			}
+			if (xfSumF < max) {
+				max = xfSumF;
+			}
+			double val = crandom.getRandomDouble(min, max);
+			if (!bConstraintsSatisfied(solution->getTable(), errCode)) {
+				solution->setAt(position, val, errCode);
+				xm->setAt(i, j, val, errCode);
+			}
+			position++;
+			xfSumF = 0;
+		}
+	}
+
+	//pdSolution = solution->getTable();
+
+	return solution;
+}
+
 
 
 Array<double>* CMscnProblem::getSolution(int & errCode)
 {
 	return solution;
 }
-void CMscnProblem::setSolutionArray(Array<double>* newSolution,int & errCode)
+void CMscnProblem::setSolutionArray(Array<double>* newSolution, int & errCode)
 {
 	if (newSolution->getSize() != D * F + F * M + M * S) {
 		errCode = WRONG_SIZE;

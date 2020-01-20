@@ -2,11 +2,11 @@
 #include "CMscnProblem.h"
 #include "COptimizer.h"
 
-class CRandomSearch:COptimizer
+class CRandomSearch:public COptimizer
 {
 public:
 	CRandomSearch();
-	CRandomSearch(CMscnProblem* cProblem,int _numOfTries);
+	CRandomSearch(CProblem* cProblem,int _numOfTries);
 	~CRandomSearch() { delete problem; }
 
 	Array<double>* search(int numOfTries, int& errCode);
